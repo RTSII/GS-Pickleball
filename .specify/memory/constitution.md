@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-- Version change: 1.1.0 -> 1.2.0
+- Version change: 1.2.0 -> 1.3.0
 - Modified principles:
   - [PRINCIPLE_1_NAME] -> Security & Secrets Hygiene (NON-NEGOTIABLE)
   - [PRINCIPLE_2_NAME] -> Data Model Is Source of Truth
@@ -15,6 +15,7 @@ Sync Impact Report
   - Non‑negotiables
   - Development Guidelines
   - TDD Pathway
+  - AI Agents & Automation
   - Roles
   - Review Cadence
   - Acceptance Gates
@@ -113,6 +114,30 @@ search keys; never expose admin keys to the browser.
 - Images: Only rights-cleared photos. Store consent and credits. Generate alt text on ingest.
 - Change management: RFCs for schema or API breaking changes with version gates.
 
+## AI Agents & Automation
+
+Purpose: accelerate data operations, content, and monitoring while preserving accuracy, privacy, and TDD quality gates.
+
+- Agent roles (assignments and scope)
+  - Crawler/Extractor: scrape public sources for venues/programs/coaches; respect robots.txt and site TOS; output normalized JSON.
+  - Normalizer/Deduper: coerce fields to schema (hours, fees, geo), dedupe records, and produce merge patches with confidence scores.
+  - Verifier: generate call/email scripts; summarize responses into atomic change sets for review.
+  - Content Generator: locality/intent copy, FAQs, and alt text using templates; throttle and ensure uniqueness.
+  - Image Pipeline: captions/alt text; duplicate detection; face/consent flags.
+  - Moderation/Fraud: screen submissions and edits; risk scoring and human review for sensitive fields (fees, hours, booking links).
+  - Analytics Agent: weekly KPI digest and anomaly flags; never writes data.
+
+- Guardrails (NON-NEGOTIABLE)
+  - Security: agents never handle admin keys or raw PII; server-side keys only; browser gets search-only keys. No secrets in prompts or logs.
+  - Compliance: honor robots.txt and rate limits; cite sources; LBTS and partner photo rights respected.
+  - TDD: every agent change ships with unit/integration tests; red–green–refactor enforced; deterministic fixtures under `tests/fixtures/`.
+  - Human-in-the-loop: critical edits (fees, hours, reservation links) require human approval with diff visualization.
+  - Observability: structured logs with correlation IDs; failure retries bounded; dashboards for crawl success, normalization errors.
+
+- Prompt and tooling governance
+  - Prompts and agent scripts live under `docs/agents/` or `scripts/` as code; changes require PR review.
+  - Vendor choice (e.g., Windsurf Cascade, Gemini, Abacus) is implementation detail; output must pass tests and gates regardless of provider.
+
 ## TDD Pathway
 
 - Project type: Next.js web app with API routes and background indexer scripts.
@@ -159,6 +184,7 @@ Product lead, Tech lead, Data steward, Community/Partnerships, Support.
   filter, partner intake live, core SEO pages indexed.
 - Monetization ready when: Stripe subscriptions live, first 5 partners onboarded,
   program booking flow tested end‑to‑end.
+- Agent guardrails met when: crawler respects robots & rate limits; normalizer emits confidence and passes contract tests; moderation queue enabled for high‑risk fields; analytics digest live.
 
 ## Appendices
 
@@ -174,5 +200,5 @@ rationale, a version bump (per semantic rules), and updates to dependent
 templates or docs. CI enforces conformance where feasible.
 <!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-**Version**: 1.2.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-09-22
+**Version**: 1.3.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-09-22
 <!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

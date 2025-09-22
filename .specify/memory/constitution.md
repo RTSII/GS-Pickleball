@@ -1,6 +1,6 @@
 <!--
 Sync Impact Report
-- Version change: (init) -> 1.0.0
+- Version change: 1.0.0 -> 1.1.0
 - Modified principles:
   - [PRINCIPLE_1_NAME] -> Security & Secrets Hygiene (NON-NEGOTIABLE)
   - [PRINCIPLE_2_NAME] -> Data Model Is Source of Truth
@@ -8,8 +8,16 @@ Sync Impact Report
   - [PRINCIPLE_4_NAME] -> Accessibility & Performance
   - [PRINCIPLE_5_NAME] -> Search as a First-Class Feature
 - Added sections:
+  - Mission
   - Development Workflow
   - Security & Data Handling
+  - Decision Rights
+  - Non‑negotiables
+  - Development Guidelines
+  - Roles
+  - Review Cadence
+  - Acceptance Gates
+  - Appendices
 - Removed sections: none
 - Templates requiring updates: none detected (no templates present under .specify/templates/)
 - Deferred TODOs: none
@@ -17,6 +25,12 @@ Sync Impact Report
 
 # Grand Strand Pickleball Constitution
 <!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+
+## Mission
+
+Build the authoritative, local-first directory for pickleball on South Carolina’s
+Grand Strand. Help players find where to play now, discover lessons, leagues,
+clinics, tournaments, and shops, and enable venues and coaches to grow.
 
 ## Core Principles
 
@@ -71,6 +85,53 @@ Enforce SSL for all database connections to Supabase. Prefer server-side
 search keys; never expose admin keys to the browser.
 <!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
 
+## Decision Rights
+
+- Product scope: Product lead decides after reviewing metrics and partner feedback.
+- Data quality: Data steward owns verification SLAs and rollback decisions.
+- Engineering: Tech lead owns architecture and performance budgets.
+- Compliance: Legal/operations approve terms, privacy, and photo rights.
+
+## Non‑negotiables
+
+- Verified contact + booking links before “Book” buttons go live.
+- Clear disclosure for sponsored/featured listings.
+- Secure by default. Search-only keys in browser; admin keys server-only.
+
+## Development Guidelines
+
+- Source of truth: Supabase Postgres + PostGIS. Search is a read model in Typesense.
+- Local-first data priority: Pawleys Island → Murrells Inlet → Myrtle Beach → North Myrtle Beach.
+- Migrations: Prisma migrations reviewed and applied in staging before prod.
+- Indexing: CDC/cron upserts to Typesense. Nightly reconciliation counts.
+- Testing: Unit on all utilities; e2e for search flows and checkout; contract tests on API.
+- Performance budgets: LCP < 2.0s on 4G; JS < 200KB on results pages; cached TTFB < 200ms; search P95 < 150ms.
+- SEO: Programmatic city/intent pages with correct schema.org. Avoid thin content.
+- Images: Only rights-cleared photos. Store consent and credits. Generate alt text on ingest.
+- Change management: RFCs for schema or API breaking changes with version gates.
+
+## Roles
+
+Product lead, Tech lead, Data steward, Community/Partnerships, Support.
+
+## Review Cadence
+
+- Weekly: KPIs, incident review, backlog grooming.
+- Monthly: SEO and supply coverage audits; partner satisfaction survey.
+
+## Acceptance Gates
+
+- MVP complete when: 75+ venues, 10+ coaches, map + facet search, “Open now”
+  filter, partner intake live, core SEO pages indexed.
+- Monetization ready when: Stripe subscriptions live, first 5 partners onboarded,
+  program booking flow tested end‑to‑end.
+
+## Appendices
+
+- Licensing & Rights: Written permission from LBTS and other venues for logos,
+  facility names when required, and on‑premise photos.
+- Data SLA: Venues recrawled weekly, programs daily, events closed at end date.
+
 ## Governance
 <!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
@@ -79,5 +140,5 @@ rationale, a version bump (per semantic rules), and updates to dependent
 templates or docs. CI enforces conformance where feasible.
 <!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-**Version**: 1.0.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-09-22
+**Version**: 1.1.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-09-22
 <!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

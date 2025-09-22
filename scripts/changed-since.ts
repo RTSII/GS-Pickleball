@@ -2,6 +2,8 @@ import "dotenv/config";
 import Typesense from "typesense";
 import { PrismaClient } from "@prisma/client";
 import { isOpenNow } from "../lib/openNow";
+import fs from "node:fs";
+import path from "node:path";
 
 function requireEnv(name: string) {
   const v = process.env[name];
@@ -14,6 +16,16 @@ const client = new Typesense.Client({
   nodes:[{host:requireEnv("TYPESENSE_HOST"), port:Number(process.env.TYPESENSE_PORT||443), protocol:process.env.TYPESENSE_PROTOCOL||"https"}],
   apiKey: requireEnv("TYPESENSE_ADMIN_KEY"),
 });
+
+// Simple file logger (optional)
+const LOG_FILE = process.env.LOG_FILE || path.join(process.cwd(), "logs", "prisma-index.log");
+function appendLog(line: string){
+  try {
+    const dir = path.dirname(LOG_FILE);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.appendFileSync(LOG_FILE, line + "\n", { encoding: "utf8" });
+  } catch {}
+}
 
 const LOOKBACK_MINUTES = Number(process.env.LOOKBACK_MINUTES || 10);
 const since = new Date(Date.now() - LOOKBACK_MINUTES*60*1000);
@@ -42,6 +54,7 @@ async function upsertVenues(){
   });
   if (docs.length) await client.collections("venues").documents().import(docs, {action:"upsert"} as any);
   console.log(`Upserted venues: ${docs.length}`);
+  appendLog(`[${new Date().toISOString()}] Upserted venues: ${docs.length}`);
 }
 
 async function upsertPrograms(){
@@ -58,6 +71,7 @@ async function upsertPrograms(){
   }));
   if (docs.length) await client.collections("programs").documents().import(docs, {action:"upsert"} as any);
   console.log(`Upserted programs: ${docs.length}`);
+  appendLog(`[${new Date().toISOString()}] Upserted programs: ${docs.length}`);
 }
 
 async function upsertCoaches(){
@@ -68,13 +82,15 @@ async function upsertCoaches(){
   }));
   if (docs.length) await client.collections("coaches").documents().import(docs, {action:"upsert"} as any);
   console.log(`Upserted coaches: ${docs.length}`);
+  appendLog(`[${new Date().toISOString()}] Upserted coaches: ${docs.length}`);
 }
 
 async function main(){
+  appendLog(`[${new Date().toISOString()}] === Begin delta index (since ${since.toISOString()}) ===`);
   await upsertVenues();
   await upsertPrograms();
   await upsertCoaches();
   await prisma.$disconnect();
 }
 
-main().catch(async (e)=>{ console.error(e); await prisma.$disconnect(); process.exit(1); });
+main().catch(async (e)=>{ console.error(e); appendLog(`[${new Date().toISOString()}] ERROR: ${e?.stack || e}`); await prisma.$disconnect(); process.exit(1); });

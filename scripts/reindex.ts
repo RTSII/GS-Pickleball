@@ -2,6 +2,8 @@ import "dotenv/config";
 import Typesense from "typesense";
 import { PrismaClient } from "@prisma/client";
 import { isOpenNow } from "../lib/openNow";
+import fs from "node:fs";
+import path from "node:path";
 
 function requireEnv(name: string) {
   const v = process.env[name];
@@ -14,6 +16,16 @@ const client = new Typesense.Client({
   nodes:[{host:requireEnv("TYPESENSE_HOST"), port:Number(process.env.TYPESENSE_PORT||443), protocol:process.env.TYPESENSE_PROTOCOL||"https"}],
   apiKey: requireEnv("TYPESENSE_ADMIN_KEY"),
 });
+
+// Simple file logger (optional)
+const LOG_FILE = process.env.LOG_FILE || path.join(process.cwd(), "logs", "prisma-index.log");
+function appendLog(line: string){
+  try {
+    const dir = path.dirname(LOG_FILE);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.appendFileSync(LOG_FILE, line + "\n", { encoding: "utf8" });
+  } catch {}
+}
 
 async function indexVenues(){
   const rows = await prisma.venue.findMany({ include:{ programs:true }});
@@ -38,6 +50,7 @@ async function indexVenues(){
     await client.collections("venues").documents().import(docs, {action:"upsert"} as any);
   }
   console.log(`Indexed venues: ${docs.length}`);
+  appendLog(`[${new Date().toISOString()}] Indexed venues: ${docs.length}`);
 }
 
 async function indexPrograms(){
@@ -56,6 +69,7 @@ async function indexPrograms(){
     await client.collections("programs").documents().import(docs, {action:"upsert"} as any);
   }
   console.log(`Indexed programs: ${docs.length}`);
+  appendLog(`[${new Date().toISOString()}] Indexed programs: ${docs.length}`);
 }
 
 async function indexCoaches(){
@@ -68,13 +82,15 @@ async function indexCoaches(){
     await client.collections("coaches").documents().import(docs, {action:"upsert"} as any);
   }
   console.log(`Indexed coaches: ${docs.length}`);
+  appendLog(`[${new Date().toISOString()}] Indexed coaches: ${docs.length}`);
 }
 
 async function main(){
+  appendLog(`[${new Date().toISOString()}] === Begin full reindex ===`);
   await indexVenues();
   await indexPrograms();
   await indexCoaches();
   await prisma.$disconnect();
 }
 
-main().catch(async (e)=>{ console.error(e); await prisma.$disconnect(); process.exit(1); });
+main().catch(async (e)=>{ console.error(e); appendLog(`[${new Date().toISOString()}] ERROR: ${e?.stack || e}`); await prisma.$disconnect(); process.exit(1); });

@@ -18,7 +18,8 @@ const client = new Typesense.Client({
 });
 
 // Simple file logger (optional)
-const LOG_FILE = process.env.LOG_FILE || path.join(process.cwd(), "logs", "prisma-index.log");
+const defaultLogName = `prisma-index-${new Date().toISOString().replace(/[:.]/g, "-")}.log`;
+const LOG_FILE = process.env.LOG_FILE || path.join(process.cwd(), "logs", defaultLogName);
 function appendLog(line: string){
   try {
     const dir = path.dirname(LOG_FILE);

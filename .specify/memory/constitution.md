@@ -1,10 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 -> 1.1.0
+- Version change: 1.1.0 -> 1.2.0
 - Modified principles:
   - [PRINCIPLE_1_NAME] -> Security & Secrets Hygiene (NON-NEGOTIABLE)
   - [PRINCIPLE_2_NAME] -> Data Model Is Source of Truth
-  - [PRINCIPLE_3_NAME] -> Reliability, Tests, and Observability
+  - [PRINCIPLE_3_NAME] -> Reliability, Tests, and Observability (TDD clarified)
   - [PRINCIPLE_4_NAME] -> Accessibility & Performance
   - [PRINCIPLE_5_NAME] -> Search as a First-Class Feature
 - Added sections:
@@ -14,6 +14,7 @@ Sync Impact Report
   - Decision Rights
   - Non‑negotiables
   - Development Guidelines
+  - TDD Pathway
   - Roles
   - Review Cadence
   - Acceptance Gates
@@ -52,9 +53,11 @@ and constraints.
 
 ### Reliability, Tests, and Observability
 <!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-CI must typecheck, lint, test, and build. API routes and scripts include clear
-logs and error context. Vitest covers key logic. Keep flakes at zero by making
-tests deterministic and fast.
+TDD is mandatory. Every new feature/change follows the red‑green‑refactor cycle:
+write a failing test (red) → implement minimal code to pass (green) → refactor
+with tests staying green. CI must typecheck, lint, test, and build. API routes
+and scripts include clear logs and error context. Vitest covers key logic. Keep
+flakes at zero by making tests deterministic and fast.
 <!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
 
 ### Accessibility & Performance
@@ -110,6 +113,37 @@ search keys; never expose admin keys to the browser.
 - Images: Only rights-cleared photos. Store consent and credits. Generate alt text on ingest.
 - Change management: RFCs for schema or API breaking changes with version gates.
 
+## TDD Pathway
+
+- Project type: Next.js web app with API routes and background indexer scripts.
+- Technology stack: Node 20, TypeScript, Next.js 14 (App Router), Prisma,
+  Supabase Postgres, Typesense, Vitest.
+- Test framework configuration: Vitest with Node environment, watch mode for
+  local dev (`npm run test:watch`), coverage via V8 (text and HTML summary).
+- Code quality tooling: ESLint + Prettier. No code merges when typecheck/lint/
+  format fail. Commit small, reviewing tests first.
+- CI/CD integration: GitHub Actions runs typecheck → lint → format → tests →
+  build on every PR/commit to `main`. Coverage thresholds SHOULD be enforced in
+  CI once the baseline suite is in place (e.g., Lines ≥70%, Branches ≥60%).
+- Test patterns:
+  - Unit: pure utilities (e.g., `lib/openNow.ts`), schema transforms.
+  - Integration: API routes with Typesense client mocked; Prisma calls tested
+    against lightweight fixtures.
+  - E2E (planned): top search journeys and error/empty states.
+- Mocking and fixtures: `vi.mock` for external clients (Typesense, fetch);
+  fixtures in `tests/fixtures/` for venues/programs/coaches; seed minimal data
+  for deterministic tests.
+- Example tests guidance: include happy path, error handling (e.g., Typesense
+  timeout), and edge cases (e.g., venues with overnight hours).
+- Project structure (tests):
+  - `tests/unit/**` — small, fast tests for pure functions
+  - `tests/integration/**` — API route and indexing integration under mocks
+  - `tests/fixtures/**` — JSON/TS builders for deterministic data
+- Command-line scripts (standard):
+  - `npm run test` — Vitest run
+  - `npm run test:watch` — watch mode
+  - `npm run typecheck` | `npm run lint` | `npm run format`
+
 ## Roles
 
 Product lead, Tech lead, Data steward, Community/Partnerships, Support.
@@ -140,5 +174,5 @@ rationale, a version bump (per semantic rules), and updates to dependent
 templates or docs. CI enforces conformance where feasible.
 <!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
 
-**Version**: 1.1.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-09-22
+**Version**: 1.2.0 | **Ratified**: 2025-09-22 | **Last Amended**: 2025-09-22
 <!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->

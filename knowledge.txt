@@ -1,0 +1,40 @@
+## Product Vision
+To create a comprehensive online directory for pickleball activities in the Grand Strand area, serving as the go-to resource for players to find courts, coaches, programs, events, and shops, thereby enhancing local engagement and supporting economic growth through paid leads and partnerships.
+
+## Objectives & Metrics
+- Achieve 100% coverage of public and club courts from Pawleys Island to North Myrtle Beach within 90 days.
+- List at least 25 coaches and secure 10 partner venues.
+- Generate first paid bookings and achieve unit economics at or above breakeven on paid leads.
+- Key metrics: number of listings, user registrations, booking conversions, and revenue from leads.
+
+## User Personas
+- **Player**: Seeks courts, events, and coaches; uses search and booking features.
+- **Venue/Coach Operator**: Manages listings, responds to inquiries, and tracks leads.
+- **Admin**: Oversees data validation, user management, and system analytics.
+
+## Key Features
+- User authentication and role-based access for players, operators, and admins.
+- Searchable directory with filters for venues, courts, programs, events, coaches, and shops.
+- Real-time updates for event calendars and booking availability.
+- Dashboard for operators to manage listings, view leads, and handle bookings.
+- Phone/email verification and claim listing functionality for data validation.
+- Responsive UI with easy navigation and mobile-friendly design.
+
+## Technical Architecture
+- Frontend: React with TypeScript and Vite for a fast, type-safe SPA.
+- Backend: Supabase for authentication, database (PostgreSQL), and real-time features.
+- Styling: Tailwind CSS with Daisy UI components for consistent and modern UI.
+- Data Sources: Integration with external APIs and manual entry with validation loops.
+- Deployment: Optimized for web with potential for future mobile adaptations.
+
+## Design System
+- Color Palette: Use coastal colors like blues and greens to reflect the beach theme, with neutral backgrounds for readability.
+- Typography: Sans-serif fonts for clean, modern look; headings in bold for hierarchy.
+- Components: Reusable UI elements from Daisy UI, ensuring consistency across pages.
+- Layout: Grid-based responsive design, with a focus on user-friendly navigation and call-to-action buttons.
+
+## Security Requirements
+- Implement Supabase Auth for secure user authentication and role management.
+- Ensure data validation on all inputs to prevent SQL injection and XSS attacks.
+- Use HTTPS for all communications and comply with basic data privacy standards.
+- Regular security audits and updates to dependencies to mitigate vulnerabilities.

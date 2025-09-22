@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Venue {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  state       String
+  zip         String?
+  lat         Float
+  lng         Float
+  indoor      Boolean  @default(false)
+  lights      Boolean  @default(false)
+  feeMin      Int?     // cents
+  feeMax      Int?
+  bookUrl     String?
+  hoursJson   Json?
+  phone       String?
+  email       String?
+  site        String?
+  sourceUrl   String?
+  tags        String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courts      Court[]
+  programs    Program[]
+  events      Event[]
+  // photos and reviews use a polymorphic pattern via (entityType, entityId)
+  // and are not modeled as Prisma relations.
+
+  @@index([city])
+  @@index([lat, lng])
+}
+
+model Court {
+  id        String  @id @default(cuid())
+  venueId   String
+  surface   String?
+  covered   Boolean @default(false)
+  dedicated Boolean @default(true)
+  permNets  Boolean @default(true)
+  Venue     Venue   @relation(fields: [venueId], references: [id], onDelete: Cascade)
+}
+
+model Program {
+  id        String   @id @default(cuid())
+  venueId   String
+  kind      ProgramKind
+  skillMin  Float?
+  skillMax  Float?
+  startTs   DateTime?
+  endTs     DateTime?
+  price     Int?     // cents
+  signupUrl String?
+  Venue     Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@index([venueId, kind])
+  @@index([startTs])
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+enum ProgramKind {
+  lesson
+  clinic
+  league
+  ladder
+  tournament
+}
+
+model Coach {
+  id         String   @id @default(cuid())
+  name       String
+  creds      String?
+  rateHour   Int?     // cents
+  ratingAvg  Float?   @default(0)
+  cities     String[] @default([])
+  contact    Json?
+  site       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Shop {
+  id       String   @id @default(cuid())
+  name     String
+  services String[] @default([]) // retail,stringing,repairs,demo
+  address  String?
+  phone    String?
+  site     String?
+  lat      Float?
+  lng      Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  venueId   String?
+  title     String
+  startTs   DateTime
+  endTs     DateTime
+  desc      String?
+  url       String?
+  Venue     Venue?   @relation(fields: [venueId], references: [id], onDelete: SetNull)
+
+  @@index([startTs])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Photo {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  url        String
+  credit     String?
+  rights     String?
+  createdAt  DateTime @default(now())
+}
+
+model Claim {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  email      String
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  rating     Int
+  text       String?
+  userEmail  String?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+}

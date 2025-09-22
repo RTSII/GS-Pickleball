@@ -15,6 +15,7 @@
     "format:fix": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "testwatch": "npm run test:watch",
     "typecheck": "tsc --noEmit",
     "typesense:setup": "tsx -r dotenv/config scripts/typesense-setup.ts",
     "index:full": "tsx -r dotenv/config scripts/reindex.ts",

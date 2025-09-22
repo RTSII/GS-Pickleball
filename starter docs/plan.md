@@ -4,17 +4,18 @@
 
 ## Architecture (linked to impl files)
 - **DB**: Supabase Postgres + PostGIS via Prisma  
-  • Models → _expected in repo_: [`/prisma/schema.prisma`](./prisma/schema.prisma)  
-  • PostGIS migration → _expected in repo_: [`/prisma/migrations/0001_postgis/steps.sql`](./prisma/migrations/0001_postgis/steps.sql)
-- **Search**: Typesense Cloud  
-  • Collections → _expected in repo_: [`/scripts/typesense-setup.ts`](./scripts/typesense-setup.ts)  
-  • Full indexer → _expected in repo_: [`/scripts/reindex.ts`](./scripts/reindex.ts)  
-  • Delta indexer → _expected in repo_: [`/scripts/changed-since.ts`](./scripts/changed-since.ts)
+  • Models → [`/prisma/schema.prisma`](../prisma/schema.prisma)  
+  • Enable extensions → [`/sql/0000_enable_extensions.sql`](../sql/0000_enable_extensions.sql)  
+  • Initial migration (generated from Prisma) → [`/prisma/migrations/0001_init/migration.sql`](../prisma/migrations/0001_init/migration.sql)
+- **Search**: Typesense (local Docker for dev; Cloud in prod)  
+  • Collections → [`/scripts/typesense-setup.ts`](../scripts/typesense-setup.ts)  
+  • Full indexer → [`/scripts/reindex.ts`](../scripts/reindex.ts)  
+  • Delta indexer → [`/scripts/changed-since.ts`](../scripts/changed-since.ts)
 - **API**: Next.js App Router routes  
-  • Venues search → _expected in repo_: [`/app/api/search/venues/route.ts`](./app/api/search/venues/route.ts)  
-  • Programs search → _expected in repo_: [`/app/api/search/programs/route.ts`](./app/api/search/programs/route.ts)
+  • Venues search → [`/app/api/search/venues/route.ts`](../app/api/search/venues/route.ts)  
+  • Programs search → [`/app/api/search/programs/route.ts`](../app/api/search/programs/route.ts)
 - **Logic utils**  
-  • Open‑now helper → _expected in repo_: [`/lib/openNow.ts`](./lib/openNow.ts)
+  • Open‑now helper → [`/lib/openNow.ts`](../lib/openNow.ts)
 
 ---
 

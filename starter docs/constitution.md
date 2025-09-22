@@ -48,3 +48,12 @@ Build the authoritative, local-first directory for pickleball on South Carolinaâ
 ## Appendices
 - **Licensing & Rights:** Written permission from LBTS and other venues for logos, facility names when required, and on-premise photos.
 - **Data SLA:** Venues recrawled weekly, programs daily, events closed at end date.
+
+---
+
+## Governance & Version
+
+- This starter document is a convenience copy. The canonical constitution lives at
+  `.specify/memory/constitution.md` and is versioned via the `/constitution` workflow.
+- Current version: **v1.1.0** (Ratified: 2025-09-22, Last Amended: 2025-09-22).
+- To propose changes, run `/constitution` in the Windsurf chat with the updated fields.

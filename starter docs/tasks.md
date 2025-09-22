@@ -1,9 +1,16 @@
 # GS Pickleball — Tasks
 
+> Governance: Tasks align with the canonical constitution at
+> `.specify/memory/constitution.md` (v1.1.0). Use Windsurf chat slash commands
+> to keep tasks in sync: `/specify`, `/plan`, `/tasks`, `/implement`.
+
 ## Phase 0 — Project bootstrap
 - [ ] Initialize repo and environments.
+- [ ] Pin Node to 20.18.x (nvm) and verify `npm ci` passes.
 - [ ] Create Supabase project; enable `postgis` and `uuid-ossp`.
-- [ ] Set env: Supabase URL/keys, Typesense keys, Mapbox token.
+- [ ] Set env: Supabase URL/keys (use pooled username `postgres.<project-ref>`),
+      Typesense keys (local admin key for dev), Mapbox token.
+- [ ] Start local Typesense Docker (`typesense:0.25.2`) and verify `/health`.
 
 ## Phase 1 — Data & schema
 - [ ] Add Prisma models: Venue, Court, Program, Coach, Shop, Event, Photo, Claim, Review.
@@ -12,7 +19,8 @@
 - Acceptance: Prisma migrate passes; spatial index exists; CRUD works.
 
 ## Phase 2 — Search & API
-- [ ] Provision Typesense Cloud; create collections for venues/programs/coaches.
+- [ ] Provision Typesense (local Docker for dev; Cloud for prod); create
+      collections for venues/programs/coaches.
 - [ ] Implement full reindex script; incremental delta job.
 - [ ] API: `/api/search/venues` with facets + distance sort.
 - [ ] API: `/api/search/programs` with date and level filters.
@@ -45,6 +53,14 @@
 ## Ongoing — QA & analytics
 - [ ] KPI dashboard and weekly digest.
 - [ ] Uptime, error alerts, and index drift alerts.
+
+---
+
+## CI & Governance
+- [ ] Keep `.env.example` current; never commit secrets.
+- [ ] Ensure Prisma/Typesense scripts run under Node 20.18.x in CI.
+- [ ] Use pooled username format for PgBouncer (`postgres.<project-ref>`).
+- [ ] Run `/tasks` in Windsurf chat to regenerate this list after any spec/plan changes.
 
 ## Command cheatsheet
 - /constitution — principles, guidelines

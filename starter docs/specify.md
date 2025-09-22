@@ -7,6 +7,13 @@ GS Pickleball is a local directory for the Grand Strand that answers:
 - What leagues/clinics/tournaments can I join this month?
 - Where can I buy or string paddles and gear?
 
+### Governance & Alignment
+- This spec aligns with the canonical constitution at
+  `.specify/memory/constitution.md` (v1.1.0). Any scope or criteria updates must
+  be consistent with: Security & Secrets Hygiene, Data Model as Source of Truth,
+  Reliability/Tests/Observability, Accessibility & Performance, and Search as a
+  First‑Class Feature.
+
 ## Target users
 - **Residents:** 2.5–4.0 players seeking drop‑in play and lessons.
 - **Visitors:** Short‑trip players needing courts near lodging.
@@ -52,7 +59,8 @@ GS Pickleball is a local directory for the Grand Strand that answers:
 
 ## Sources of truth
 - Supabase Postgres + PostGIS stores canonical entities.
-- Typesense Cloud indexes `venues`, `programs`, `coaches` for search.
+- Typesense indexes `venues`, `programs`, `coaches` for search (local Docker in
+  dev; Cloud in prod).
 
 ## Key flows
 1) **Search** → filter map/list → venue detail → external booking.
@@ -62,6 +70,8 @@ GS Pickleball is a local directory for the Grand Strand that answers:
 ## Constraints
 - Mobile-first; majority of discovery is on phones.
 - Strong seasonality and weather; hours vary with daylight.
+- Local‑first coverage priority: Pawleys Island → Murrells Inlet → Myrtle Beach
+  → North Myrtle Beach.
 
 ---
 
@@ -118,6 +128,13 @@ GS Pickleball is a local directory for the Grand Strand that answers:
 
 ---
 
+## Security & Privacy
+- Browser only uses search‑only Typesense key; admin key remains server‑only.
+- SSL enforced for database connections. No secrets committed; document required
+  env in `.env.example` and rotate keys on suspicion of leak.
+
+---
+
 ## Review & Acceptance Checklist
 - [ ] **Coverage**: ≥75 venues listed; ≥60% verified.
 - [ ] **Search**: Facets work (indoor, lights, open-now); typo tolerance verified.
@@ -129,3 +146,9 @@ GS Pickleball is a local directory for the Grand Strand that answers:
 - [ ] **Error/empty states**: All defined states implemented and covered by tests.
 - [ ] **Reliability**: SLO and monitoring dashboards configured; alerting active.
 - [ ] **Security**: Typesense search-only key in browser; admin keys server-only; RLS in place for user-submitted data.
+
+---
+
+### Version
+This document reflects constitution v1.1.0. Amendments to scope or criteria
+should reference a new constitution version or rationale.

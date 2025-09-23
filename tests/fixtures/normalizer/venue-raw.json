@@ -1,0 +1,8 @@
+{
+  "name": "LBTS Courts",
+  "address": "1 Norris Dr",
+  "city": "Pawleys Island",
+  "fee_range": "$5-$10",
+  "hours": { "tz": "America/New_York", "mon": [["09:00", "17:00"]] },
+  "sourceUrl": "https://www.litchfieldbythesea.com/amenities/pickleball"
+}

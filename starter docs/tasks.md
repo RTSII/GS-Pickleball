@@ -1,8 +1,10 @@
 # GS Pickleball — Tasks
 
 > Governance: Tasks align with the canonical constitution at
-> `.specify/memory/constitution.md` (v1.1.0). Use Windsurf chat slash commands
+> `.specify/memory/constitution.md` (v1.3.0). Use Windsurf chat slash commands
 > to keep tasks in sync: `/specify`, `/plan`, `/tasks`, `/implement`.
+>
+> Canonical product spec: `docs/specify.md`. Agent SOPs: `docs/agents/`.
 
 ## Phase 0 — Project bootstrap
 - [ ] Initialize repo and environments.
@@ -61,6 +63,8 @@
 - [ ] Ensure Prisma/Typesense scripts run under Node 20.18.x in CI.
 - [ ] Use pooled username format for PgBouncer (`postgres.<project-ref>`).
 - [ ] Run `/tasks` in Windsurf chat to regenerate this list after any spec/plan changes.
+ - [ ] Follow TDD Pathway and agent guardrails from `.specify/memory/constitution.md` (v1.3.0).
+ - [ ] Reference canonical spec in `docs/specify.md` when updating scope or acceptance criteria.
 
 ## Command cheatsheet
 - /constitution — principles, guidelines

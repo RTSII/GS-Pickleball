@@ -1,5 +1,7 @@
 # GS Pickleball — Technical Plan
 
+> Note: The canonical product spec is `docs/specify.md` (aligned to constitution v1.3.0). Keep this plan consistent with the canonical spec and the TDD Pathway + AI Agents guardrails in `.specify/memory/constitution.md`.
+>
 > Cross‑check [`research.md`](./research.md) before each milestone. Pin versions and update decisions there if the stack moves.
 
 ## Architecture (linked to impl files)
@@ -16,6 +18,11 @@
   • Programs search → [`/app/api/search/programs/route.ts`](../app/api/search/programs/route.ts)
 - **Logic utils**  
   • Open‑now helper → [`/lib/openNow.ts`](../lib/openNow.ts)
+
+### Related canonical docs
+- Product Specification (canonical): [`docs/specify.md`](../docs/specify.md)
+- Constitution (v1.3.0): [`.specify/memory/constitution.md`](../.specify/memory/constitution.md)
+- Agent SOPs: [`docs/agents/`](../docs/agents/) — crawler, normalizer, verifier, image pipeline, moderation, analytics
 
 ---
 

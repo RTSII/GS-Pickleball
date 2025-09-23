@@ -1,4 +1,6 @@
 # GS Pickleball — Constitution
+ 
+ > Note: The canonical constitution lives at `.specify/memory/constitution.md` (current: v1.3.0). This starter copy is for onboarding; update the canonical file first.
 
 ## Mission
 Build the authoritative, local-first directory for pickleball on South Carolina’s Grand Strand. Help players find where to play **now**, discover lessons, leagues, clinics, tournaments, and shops, and enable venues and coaches to grow.
@@ -52,8 +54,9 @@ Build the authoritative, local-first directory for pickleball on South Carolina�
 ---
 
 ## Governance & Version
-
-- This starter document is a convenience copy. The canonical constitution lives at
-  `.specify/memory/constitution.md` and is versioned via the `/constitution` workflow.
-- Current version: **v1.1.0** (Ratified: 2025-09-22, Last Amended: 2025-09-22).
-- To propose changes, run `/constitution` in the Windsurf chat with the updated fields.
+ 
+ - This starter document is a convenience copy. The canonical constitution lives at
+   `.specify/memory/constitution.md` and is versioned via the `/constitution` workflow.
+ - Current version: **v1.3.0** (Ratified: 2025-09-22, Last Amended: 2025-09-22).
+ - See the TDD Pathway and AI Agents & Automation sections for mandatory guardrails.
+ - To propose changes, run `/constitution` in the Windsurf chat with the updated fields.

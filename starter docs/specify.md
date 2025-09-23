@@ -1,5 +1,7 @@
 # GS Pickleball — Product Specification
 
+> Note: The canonical specification now lives at `docs/specify.md` and is aligned to constitution v1.3.0. This starter copy remains for convenience; update the canonical file first.
+
 ## Summary
 GS Pickleball is a local directory for the Grand Strand that answers:
 - Where can I play **right now**?
@@ -9,10 +11,10 @@ GS Pickleball is a local directory for the Grand Strand that answers:
 
 ### Governance & Alignment
 - This spec aligns with the canonical constitution at
-  `.specify/memory/constitution.md` (v1.1.0). Any scope or criteria updates must
-  be consistent with: Security & Secrets Hygiene, Data Model as Source of Truth,
-  Reliability/Tests/Observability, Accessibility & Performance, and Search as a
-  First‑Class Feature.
+  `.specify/memory/constitution.md` (v1.3.0). Any scope or criteria updates must
+  be consistent with: Security & Secrets Hygiene, Data Model Is Source of Truth,
+  Reliability/Tests/Observability (TDD red–green–refactor required), Accessibility & Performance,
+  and Search as a First‑Class Feature. See also the AI Agents & Automation guardrails.
 
 ## Target users
 - **Residents:** 2.5–4.0 players seeking drop‑in play and lessons.
@@ -150,5 +152,5 @@ GS Pickleball is a local directory for the Grand Strand that answers:
 ---
 
 ### Version
-This document reflects constitution v1.1.0. Amendments to scope or criteria
-should reference a new constitution version or rationale.
+This document reflects constitution v1.3.0. Amendments to scope or criteria
+should reference the updated constitution version or rationale.

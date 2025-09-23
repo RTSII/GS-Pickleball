@@ -75,6 +75,18 @@ Agent-facing docs live in `starter docs/` and map to Spec Kit commands:
 
 You can keep these as living docs or merge into `specs/001-gs-pickleball-core/`.
 
+### Canonical docs and workflows
+- Constitution (current): `.specify/memory/constitution.md` (v1.3.0)
+- Product Specification (canonical): `docs/specify.md`
+- Agent SOPs: `docs/agents/`
+  - `crawler.md`, `normalizer.md`, `verifier.md`, `image-pipeline.md`, `moderation.md`, `analytics.md`
+- Workflows: `.windsurf/workflows/`
+  - `/auto-commit` — stage/commit/push with a message
+  - `/specify` — create/update feature specs from a description
+- TDD/CI config:
+  - `vitest.config.ts` — coverage thresholds (Lines ≥70, Branches ≥60, Functions ≥70, Statements ≥70)
+  - `.github/workflows/ci.yml` — typecheck → lint → format → tests → build
+
 ## File inventory (selected)
 
 - `app/` — Next.js App Router, API routes under `api/`

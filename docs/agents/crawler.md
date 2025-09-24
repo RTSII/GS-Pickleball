@@ -76,3 +76,8 @@ describe("parseVenue", () => {
 
 - Metrics: pages crawled, success rate, avg response, error codes.
 - Alerts: sustained 4xx/5xx, parse failures >5%.
+
+## Platform
+
+- Primary environment: Windows with PowerShell. Provide commands in PowerShell format by default.
+- Respect `.gitignore` at all times; never commit secrets or credentials.

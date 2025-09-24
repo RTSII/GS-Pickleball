@@ -64,3 +64,8 @@ describe("normalizeVenue", () => {
 
 - Log normalization errors with sourceUrl and field blame.
 - Track dedupe rate and average confidence.
+
+## Platform
+
+- Primary environment: Windows with PowerShell. Provide commands in PowerShell format by default.
+- Respect `.gitignore` at all times; never commit secrets or credentials.

@@ -52,3 +52,8 @@ body: |
 
 - Track verification attempts, response rate, approval/decline counts.
 - Alert on repeated discrepancies for the same venue.
+
+## Platform
+
+- Primary environment: Windows with PowerShell. Provide commands in PowerShell format by default.
+- Respect `.gitignore` at all times; never commit secrets or credentials.

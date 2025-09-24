@@ -34,3 +34,8 @@
 
 - Metrics: percent flagged, duplicate rate, avg caption length.
 - Alerts: spikes in flags, repeated upload from same source.
+
+## Platform
+
+- Primary environment: Windows with PowerShell. Provide commands in PowerShell format by default.
+- Respect `.gitignore` at all times; never commit secrets or credentials.

@@ -4,7 +4,8 @@
 **Prerequisites**: plan.md (required), research.md, data-model.md, contracts/
 
 ## Execution Flow (main)
-```
+
+```text
 1. Load plan.md from feature directory
    → If not found: ERROR "No implementation plan found"
    → Extract: tech stack, libraries, structure
@@ -12,6 +13,10 @@
    → data-model.md: Extract entities → model tasks
    → contracts/: Each file → contract test task
    → research.md: Extract decisions → setup tasks
+2a. Cross-reference starter docs (if present):
+   → Read 'starter docs/research.md' (version pins, vendor choices, decisions, gap log, benchmarks)
+   → Read 'starter docs/tasks.md' (bootstrap tasks, CI/governance)
+   → Incorporate pertinent items into Setup, Tests, and Integration categories
 3. Generate tasks by category:
    → Setup: project init, dependencies, linting
    → Tests: contract tests, integration tests
@@ -28,7 +33,7 @@
 8. Validate task completeness:
    → All contracts have tests?
    → All entities have models?
-   → All endpoints implemented?
+   → All endpoints have implementation tasks?
 9. Return: SUCCESS (tasks ready for execution)
 ```
 
@@ -42,22 +47,33 @@
 - **Mobile**: `api/src/`, `ios/src/` or `android/src/`
 - Paths shown below assume single project - adjust based on plan.md structure
 
+## Cross-References (starter docs)
+
+- If `starter docs/research.md` exists:
+  - Pull Version Pins, Vendor Choices, Decision Records, Gap Log, Benchmarks into appropriate sections (do not duplicate; summarize and link).
+- If `starter docs/tasks.md` exists:
+  - Note bootstrap and CI/Governance tasks; ensure Setup phase acknowledges these where relevant.
+
 ## Phase 3.1: Setup
 - [ ] T001 Create project structure per implementation plan
 - [ ] T002 Initialize [language] project with [framework] dependencies
 - [ ] T003 [P] Configure linting and formatting tools
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
+
+Note: Examples below are illustrative; adapt file names and extensions to the stack defined in plan.md.
+
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
-- [ ] T004 [P] Contract test POST /api/users in tests/contract/test_users_post.py
-- [ ] T005 [P] Contract test GET /api/users/{id} in tests/contract/test_users_get.py
-- [ ] T006 [P] Integration test user registration in tests/integration/test_registration.py
-- [ ] T007 [P] Integration test auth flow in tests/integration/test_auth.py
+
+- [ ] T004 [P] Contract test POST /api/users in tests/contract/users.post.test.[ext]
+- [ ] T005 [P] Contract test GET /api/users/{id} in tests/contract/users.get.test.[ext]
+- [ ] T006 [P] Integration test user registration in tests/integration/registration.test.[ext]
+- [ ] T007 [P] Integration test auth flow in tests/integration/auth.test.[ext]
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-- [ ] T008 [P] User model in src/models/user.py
-- [ ] T009 [P] UserService CRUD in src/services/user_service.py
-- [ ] T010 [P] CLI --create-user in src/cli/user_commands.py
+- [ ] T008 [P] User model in src/models/user.[ext]
+- [ ] T009 [P] UserService CRUD in src/services/user_service.[ext]
+- [ ] T010 [P] CLI --create-user in src/cli/user_commands.[ext]
 - [ ] T011 POST /api/users endpoint
 - [ ] T012 GET /api/users/{id} endpoint
 - [ ] T013 Input validation
@@ -70,7 +86,7 @@
 - [ ] T018 CORS and security headers
 
 ## Phase 3.5: Polish
-- [ ] T019 [P] Unit tests for validation in tests/unit/test_validation.py
+- [ ] T019 [P] Unit tests for validation in tests/unit/test_validation.[ext]
 - [ ] T020 Performance tests (<200ms)
 - [ ] T021 [P] Update docs/api.md
 - [ ] T022 Remove duplication
@@ -83,7 +99,8 @@
 - Implementation before polish (T019-T023)
 
 ## Parallel Example
-```
+
+```text
 # Launch T004-T007 together:
 Task: "Contract test POST /api/users in tests/contract/test_users_post.py"
 Task: "Contract test GET /api/users/{id} in tests/contract/test_users_get.py"
@@ -98,16 +115,17 @@ Task: "Integration test auth in tests/integration/test_auth.py"
 - Avoid: vague tasks, same file conflicts
 
 ## Task Generation Rules
-*Applied during main() execution*
+
+Applied during main() execution
 
 1. **From Contracts**:
    - Each contract file → contract test task [P]
    - Each endpoint → implementation task
-   
+
 2. **From Data Model**:
    - Each entity → model creation task [P]
    - Relationships → service layer tasks
-   
+
 3. **From User Stories**:
    - Each story → integration test [P]
    - Quickstart scenarios → validation tasks
@@ -117,7 +135,8 @@ Task: "Integration test auth in tests/integration/test_auth.py"
    - Dependencies block parallel execution
 
 ## Validation Checklist
-*GATE: Checked by main() before returning*
+
+GATE: Checked by main() before returning
 
 - [ ] All contracts have corresponding tests
 - [ ] All entities have model tasks

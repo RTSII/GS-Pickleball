@@ -192,3 +192,66 @@ GS Pickleball is a local directory for the Grand Strand that answers:
 ### Version
 
 This document reflects constitution v1.3.0. Amendments to scope or criteria should reference the updated constitution version or rationale.
+
+## Clarifications (applied defaults)
+
+The following clarifications resolve underspecified areas to unblock planning and testing for GS Pickleball v1.
+
+### 1. Functional scope and UX
+
+- Favorites: Account-based favorites; guests fall back to local storage.
+- Alerts/subscriptions: Email digests (daily/weekly). Quiet hours 21:00–07:00 local. Per-category opt-out.
+- Embeddable widget: Public, read-only; signed URL (TTL 1 hour). Config: location, program type, count.
+- Coach inquiries: In-app inquiry form emails coach and logs activity. No long-term PII storage; 30-day retention for messages/logs.
+
+### 2. Data model specifics
+
+- Skill levels: USA Pickleball scale 2.0–5.0 in 0.5 increments.
+- Currency: USD stored explicitly; display with "$".
+- Venue hours: Support multiple intervals per day; normalize overnight spans by splitting across midnight.
+- Reservation rules: `reservation_required` (bool), `method` (walk-in/phone/web/app), `url`, `phone`, `window_minutes`, `notes`.
+
+### 3. “Open now” logic
+
+- Time zone & DST: Derive time zone from geo; apply DST via library; compute in venue local time.
+- Overnight handling: A venue is open if current local time is within any normalized interval, including split overnight.
+
+### 4. Search semantics (Typesense)
+
+- Default radius & sort: 25 miles (40 km). Sort by distance; tie-breaker by relevance score.
+- Query fields & weights: `name^3`, `city^2`, `tags^2`, `amenities^1`.
+- Typo tolerance & synonyms: Enable typo tolerance; synonyms include: pickleball/pickle ball, clinic/lesson, league/ladder.
+
+### 5. Programs and events
+
+- Required fields: `title`, `kind`, `level_min`, `level_max`, `start`, `end` (ISO), `price`, `location_id`, `signup_url`, `capacity`; `remaining` optional.
+- Changes: `status` (scheduled/cancelled/moved); if moved, include `original_time`.
+
+### 6. Coaches and shops
+
+- Coach verification: `verified` after manual review; store `evidence_url` and `evidence_type`.
+- Shop services taxonomy: `retail`, `stringing`, `repairs`, `demo`; allow freeform `notes`.
+
+### 7. SEO and content
+
+- Locality-intent pages: ≥300 words unique copy; H1 "Pickleball in {City}"; apply schema.org LocalBusiness/Place as applicable.
+- Canonicals & pagination: Canonicalize filter permutations; page size 20; cap at 1000 results.
+
+### 8. Performance and operations
+
+- Performance documentation: Track measurements in `docs/ops/performance.md` (Lighthouse profiles and Typesense benchmarks).
+- Indexing cadence: Delta job every 10 minutes with jitter; nightly reconciliation at 02:00 local.
+
+### 9. Security and privacy
+
+- PII handling: Mask emails/phones in logs; 30-day retention for inquiries; do not retain full message bodies beyond 30 days.
+- API rate limits: Public search 60 req/min/IP; server-side (keyed) 600 req/min.
+
+### 10. Accessibility and testing
+
+- A11y toolchain: axe-core rules in CI plus manual keyboard checks for critical flows.
+- Deterministic fixtures: `tests/fixtures/{venues,programs,coaches}.json`; include ≥10 venues (varied hours) and ≥8 programs across levels.
+
+### Readiness for planning
+
+All default clarifications are applied. No remaining [NEEDS CLARIFICATION]. This spec is ready for `/plan`.

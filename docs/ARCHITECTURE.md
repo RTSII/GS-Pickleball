@@ -36,3 +36,26 @@ This app is a Next.js 14 (App Router) web app with Supabase Postgres/PostGIS for
 - App LCP ≤2.0s on 4G
 
 See `specs/001-gs-pickleball-core/` for the living spec, plan, and tasks.
+
+## API Endpoints (current)
+
+- `GET /api/search/venues` — calls Typesense `venues` collection with `query_by=name,city,tags`, distance sort via `_geo` and optional facets (`indoor`, `lights`, `open`).
+  - Implementation: `app/api/search/venues/route.ts`.
+- `GET /api/search/programs` — scaffold present for program search; wire up schema/fields in implementation.
+
+## Environment variables
+
+- Supabase: `SUPABASE_URL`, `SUPABASE_ANON_KEY`
+- Typesense (single host example): `TYPESENSE_HOST`, `TYPESENSE_PORT` (default 443), `TYPESENSE_PROTOCOL` (https)
+- Keys: `TYPESENSE_SEARCH_KEY` (server-side search), `NEXT_PUBLIC_TYPESENSE_SEARCH_KEY` (optional client search)
+- Indexing: `TYPESENSE_ADMIN_KEY` (scripts only)
+
+## Indexing scripts
+
+- Provision collections: `npm run typesense:setup` (`scripts/typesense-setup.ts`)
+- Full reindex: `npm run index:full`
+- Delta index: `npm run index:delta` (uses `LOOKBACK_MINUTES`)
+
+## Deployment
+
+- Vercel-ready. Configure the env vars above in Vercel Project Settings (Production & Preview). Build with `npm run build`.

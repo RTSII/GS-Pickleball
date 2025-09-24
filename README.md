@@ -4,20 +4,22 @@ Runnable Next.js 14 app with Prisma (Supabase Postgres/PostGIS), Typesense searc
 
 ## Quickstart
 
-1) Install dependencies
+Requires Node 18–20 (see `package.json > engines`), and npm.
+
+1. Install dependencies
 
 ```bash
 npm install
 ```
 
-2) Configure environment
+1. Configure environment
 
 ```bash
 cp .env.example .env
 # Fill in Supabase, Typesense, and Mapbox values
 ```
 
-3) Database setup (Supabase)
+1. Database setup (Supabase)
 
 ```sql
 -- In Supabase SQL editor
@@ -30,19 +32,21 @@ Run Prisma locally (optional, for types and client):
 npx prisma generate
 ```
 
-4) Provision Typesense collections
+1. Provision Typesense collections
 
 ```bash
 npm run typesense:setup
 ```
 
-5) Start the app
+1. Start the app
 
 ```bash
 npm run dev
 ```
 
-Open http://localhost:3000 and use the search UI. The Search button calls `/api/search/venues` using your Typesense search key.
+Open <http://localhost:3000> and use the search UI. The Search button calls `/api/search/venues` using your Typesense search key.
+
+If you haven’t configured Typesense yet (env + collections + indexing), the UI will load but searches will return no results. See “Indexing data” and “Deployment”.
 
 ## Indexing data
 
@@ -50,6 +54,28 @@ Open http://localhost:3000 and use the search UI. The Search button calls `/api/
 - Delta upsert (LOOKBACK_MINUTES=10 by default): `npm run index:delta`
 
 Both scripts require `TYPESENSE_ADMIN_KEY` and DB access. They load `.env` automatically and assert required env vars.
+
+### Quick index in 60 seconds
+
+1. Ensure env in `.env`:
+     - `TYPESENSE_HOST`, `TYPESENSE_PORT` (443), `TYPESENSE_PROTOCOL` (https)
+     - `TYPESENSE_ADMIN_KEY` (for indexing), `TYPESENSE_SEARCH_KEY` (for API routes)
+
+1. Provision collections:
+
+```bash
+npm run typesense:setup
+```
+
+1. Index data:
+
+```bash
+npm run index:full
+```
+
+1. Verify search works:
+     - Open <http://localhost:3000>
+     - Try a query; or call `GET /api/search/venues?q=pawleys`.
 
 ## Scripts
 
@@ -59,10 +85,38 @@ Both scripts require `TYPESENSE_ADMIN_KEY` and DB access. They load `.env` autom
 - `test`, `test:watch` — Vitest unit tests (see `tests/`)
 - `typesense:setup`, `index:full`, `index:delta` — Search setup and indexing
 
+## Deployment (Vercel)
+
+1. Create a Vercel project and connect this repo.
+1. Configure Environment Variables for Production/Preview:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+- `TYPESENSE_HOST` (or `TYPESENSE_NODES` JSON), `TYPESENSE_PORT`, `TYPESENSE_PROTOCOL`
+- `TYPESENSE_SEARCH_KEY` (search-only key)
+- `MAPBOX_PUBLIC_TOKEN` (optional if you add maps)
+
+1. Build command: `npm run build` (default). Output: Next.js.
+
+1. Run the provisioning and indexing steps at least once (from your local machine or a secure job):
+
+```bash
+npm run typesense:setup
+npm run index:full
+```
+
+1. After deploy, verify `/` loads and `/api/search/venues` returns results when data exists in Typesense.
+
 ## Security and keys
 
 - Never expose `TYPESENSE_ADMIN_KEY` to the browser.
 - Server routes prefer `TYPESENSE_SEARCH_KEY` (non-public). Only use `NEXT_PUBLIC_TYPESENSE_SEARCH_KEY` if you search directly from the browser.
+
+## Troubleshooting
+
+- Empty search results locally: ensure env vars are set, Typesense collections exist (`npm run typesense:setup`), and data is indexed (`npm run index:full`).
+- 401/403 from Typesense: confirm you are using the search key on API routes, not the admin key; verify allowed hosts.
+- Node version errors: use Node 18, 19, or 20 (see `"engines": ">=18 <21"`).
 
 ## Docs (Spec Kit)
 
@@ -76,7 +130,8 @@ Agent-facing docs live in `starter docs/` and map to Spec Kit commands:
 You can keep these as living docs or merge into `specs/001-gs-pickleball-core/`.
 
 ### Canonical docs and workflows
-- Constitution (current): `.specify/memory/constitution.md` (v1.3.0)
+
+- Constitution (current): <https://github.com/SpecKit/memory/blob/main/constitution.md> (v1.3.0)
 - Product Specification (canonical): `docs/specify.md`
 - Agent SOPs: `docs/agents/`
   - `crawler.md`, `normalizer.md`, `verifier.md`, `image-pipeline.md`, `moderation.md`, `analytics.md`

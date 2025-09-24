@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Pre-commit hook to run tests before allowing a commit.
+# This hook assumes a Node.js project and will respect whichever lockfile is present.
+# It is intentionally lightweight and will not fail if no test script is defined.
+
+set -euo pipefail
+
+# Move to repo root (hook runs from .git/hooks by default when not using core.hooksPath)
+# When using core.hooksPath, we're already at repo root. Try to detect and cd if needed.
+if [[ -d .git && -d .git/hooks ]]; then
+  : # Already at repo root
+else
+  # Try to find repo root by walking up
+  REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+  cd "$REPO_ROOT"
+fi
+
+# If there's no package.json, there's nothing to install or test; allow commit
+if [[ ! -f package.json ]]; then
+  echo "[pre-commit] No package.json found; skipping install and tests"
+  exit 0
+fi
+
+# Install deps based on lockfile
+if [[ -f package-lock.json ]]; then
+  echo "[pre-commit] Using npm ci (package-lock.json found)"
+  npm ci --silent || npm install --silent
+elif [[ -f yarn.lock ]]; then
+  echo "[pre-commit] Using yarn install (yarn.lock found)"
+  yarn install --silent --frozen-lockfile || yarn install --silent
+elif [[ -f pnpm-lock.yaml ]]; then
+  echo "[pre-commit] Using pnpm install (pnpm-lock.yaml found)"
+  pnpm install --silent --frozen-lockfile || pnpm install --silent
+else
+  echo "[pre-commit] No lockfile found; running npm install as fallback"
+  npm install --silent || true
+fi
+
+# Run tests if present (does not fail if script is absent)
+if npm run -s | grep -qE "^\s*test\s*"; then
+  echo "[pre-commit] Running tests via 'npm run test --if-present'"
+  npm run test --if-present --silent
+else
+  echo "[pre-commit] No test script found; skipping tests"
+fi
+
+# If we reach here, allow the commit
+exit 0

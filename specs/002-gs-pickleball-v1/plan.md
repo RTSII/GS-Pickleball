@@ -3,6 +3,7 @@
 **Branch**: `002-gs-pickleball-v1` | **Date**: 2025-09-24 | **Spec**: specs/002-gs-pickleball-v1/spec.md
 
 ## Execution Flow (/plan command scope)
+
 ```text
 1. Load feature spec from Input
    → If not found: ERROR "No feature spec at {path}"
@@ -23,7 +24,9 @@
 ```
 
 ## Summary
+
 From the feature spec, v1 delivers:
+
 - Map + list search with facets (indoor, lights, open-now, fees, lessons)
 - Venue detail with hours, amenities, fee range, booking/contact
 - Program discovery with level/date/price filters
@@ -34,7 +37,19 @@ From the feature spec, v1 delivers:
 
 Technical approach will use the project’s standard architecture (Next.js App Router, API routes, Typesense search index and Supabase as source of truth) per constitution v1.3.0.
 
+## Cross-References (starter docs)
+
+- Source: `starter docs/research.md`  
+  Incorporated into this plan and the feature research:
+  - Version Pins (frameworks, server/client libraries)
+  - Vendor Choices (Search, Hosting, Email, Payments) with alternatives
+  - Decision Records (cron indexing, auth mode, no semantic search, PgBouncer username, Node pin, Typesense envs)
+  - Gap Log (open items) and Benchmarks
+- Source: `starter docs/tasks.md`  
+  Acknowledged for Phase 0 bootstrap and CI/Governance expectations. Use as a reference when aligning setup steps and pipelines.
+
 ## Technical Context
+
 **Language/Version**: TypeScript on Node 20  
 **Primary Dependencies**: Next.js 14 (App Router), Prisma, Supabase Postgres + PostGIS, Typesense, Vitest  
 **Storage**: Supabase Postgres (canonical), Typesense (read model)  
@@ -46,6 +61,7 @@ Technical approach will use the project’s standard architecture (Next.js App R
 **Scale/Scope**: Local-first GS region; ≥75 venues, ≥100 active programs
 
 ## Constitution Check
+
 - Security & Secrets Hygiene:  
   - No admin keys in browser; `.env.example` documents required env.  
   - SSL enforced for DB connections.  
@@ -63,7 +79,8 @@ Status: No violations identified at plan time; validate during implementation ch
 ## Project Structure
 
 ### Documentation (this feature)
-```
+
+```text
 specs/002-gs-pickleball-v1/
 ├── plan.md              # This file (/plan output)
 ├── research.md          # Phase 0 output (/plan)
@@ -73,7 +90,8 @@ specs/002-gs-pickleball-v1/
 ```
 
 ### Source Code (repository root)
-```
+
+```text
 # Web application
 app/                     # Next.js App Router
 lib/                     # Utilities, helpers
@@ -83,6 +101,7 @@ scripts/                 # Indexing and ops scripts
 **Structure Decision**: Web application (Next.js App Router + API routes)
 
 ## Phase 0: Outline & Research
+
 1. Extract unknowns from Technical Context and Spec:
    - Verify Geo → Timezone mapping library and DST handling approach.  
    - Confirm default geo radius (25 miles) and tie-breakers in Typesense config.  
@@ -91,9 +110,12 @@ scripts/                 # Indexing and ops scripts
    - Verify program required fields and validation rules.  
 2. Generate research tasks and consolidate into research.md with decisions, rationale, alternatives.
 
-Output: research.md
+  Output: research.md
+  
+  Reference: See `starter docs/tasks.md` for bootstrap and CI/Governance setup inputs.
 
 ## Phase 1: Design & Contracts
+
 1. Data model outline → data-model.md (entities, fields, relationships).  
 2. Contracts: endpoints for search, programs, venues (OpenAPI/JSON outlines) under contracts/.  
 3. Quickstart: end-to-end validation steps → quickstart.md.  
@@ -102,6 +124,7 @@ Output: research.md
 Outputs: data-model.md, contracts/*, quickstart.md
 
 ## Phase 2: Task Planning Approach (describe only)
+
 - Load `.specify/templates/tasks-template.md` as base.  
 - Generate tasks from Phase 1 design docs (contracts, data model, quickstart).  
 - TDD order: tests before implementation; mark [P] for parallel when files are independent.
@@ -109,11 +132,13 @@ Outputs: data-model.md, contracts/*, quickstart.md
 Estimated Output: 25–30 tasks in tasks.md (created by /tasks command)
 
 ## Complexity Tracking
+
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
 | — | — | — |
 
 ## Progress Tracking
+
 **Phase Status**:  
 - [ ] Phase 0: Research complete (/plan)  
 - [ ] Phase 1: Design complete (/plan)  

@@ -1,16 +1,20 @@
-
 # Implementation Plan: [FEATURE]
 
 **Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 **Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
 
 ## Execution Flow (/plan command scope)
-```
+
+```text
 1. Load feature spec from Input path
    → If not found: ERROR "No feature spec at {path}"
 2. Fill Technical Context (scan for NEEDS CLARIFICATION)
    → Detect Project Type from context (web=frontend+backend, mobile=app+api)
    → Set Structure Decision based on project type
+2a. Cross-reference starter docs (if present)
+   → Read: 'starter docs/research.md' (version pins, vendor choices, decisions, gap log, benchmarks)
+   → Read: 'starter docs/tasks.md' (starter bootstrap tasks, CI/governance)
+   → Incorporate pertinent items into Summary, Technical Context, Constitution Check, and Phase sections
 3. Fill the Constitution Check section based on the content of the constitution document.
 4. Evaluate Constitution Check section below
    → If violations exist: Document in Complexity Tracking
@@ -26,14 +30,29 @@
 9. STOP - Ready for /tasks command
 ```
 
-**IMPORTANT**: The /plan command STOPS at step 7. Phases 2-4 are executed by other commands:
-- Phase 2: /tasks command creates tasks.md
-- Phase 3-4: Implementation execution (manual or via tools)
-
 ## Summary
-[Extract from feature spec: primary requirement + technical approach from research]
+
+Extract from feature spec: primary requirement + technical approach from research.
+
+## Cross-References (starter docs)
+
+If `starter docs/research.md` exists:
+  - Pull Version Pins, Vendor Choices, Decision Records, Gap Log, Benchmarks into appropriate sections (do not duplicate; summarize and link).
+If `starter docs/tasks.md` exists:
+  - Note bootstrap and CI/Governance tasks; ensure Phase 0 setup acknowledges these where relevant.
 
 ## Technical Context
+
+Language and version are specified below.
+Primary dependencies are listed below.
+Storage is specified below if applicable.
+Testing frameworks are listed below.
+Target platform is specified below.
+Project type is specified below.
+Performance goals are specified below.
+Constraints are specified below.
+Scale and scope are specified below.
+
 **Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
 **Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
 **Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
@@ -45,14 +64,16 @@
 **Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+
+GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.
 
 [Gates determined based on constitution file]
 
 ## Project Structure
 
 ### Documentation (this feature)
-```
+
+```text
 specs/[###-feature]/
 ├── plan.md              # This file (/plan command output)
 ├── research.md          # Phase 0 output (/plan command)
@@ -63,7 +84,8 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
-```
+
+```text
 # Option 1: Single project (DEFAULT)
 src/
 ├── models/
@@ -123,7 +145,8 @@ ios/ or android/
 **Output**: research.md with all NEEDS CLARIFICATION resolved
 
 ## Phase 1: Design & Contracts
-*Prerequisites: research.md complete*
+
+Prerequisites: research.md complete
 
 1. **Extract entities from feature spec** → `data-model.md`:
    - Entity name, fields, relationships
@@ -156,7 +179,8 @@ ios/ or android/
 **Output**: data-model.md, /contracts/*, failing tests, quickstart.md, agent-specific file
 
 ## Phase 2: Task Planning Approach
-*This section describes what the /tasks command will do - DO NOT execute during /plan*
+
+This section describes what the /tasks command will do - DO NOT execute during /plan.
 
 **Task Generation Strategy**:
 - Load `.specify/templates/tasks-template.md` as base
@@ -176,14 +200,16 @@ ios/ or android/
 **IMPORTANT**: This phase is executed by the /tasks command, NOT by /plan
 
 ## Phase 3+: Future Implementation
-*These phases are beyond the scope of the /plan command*
+
+These phases are beyond the scope of the /plan command.
 
 **Phase 3**: Task execution (/tasks command creates tasks.md)  
 **Phase 4**: Implementation (execute tasks.md following constitutional principles)  
 **Phase 5**: Validation (run tests, execute quickstart.md, performance validation)
 
 ## Complexity Tracking
-*Fill ONLY if Constitution Check has violations that must be justified*
+
+Fill ONLY if Constitution Check has violations that must be justified.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
@@ -192,7 +218,8 @@ ios/ or android/
 
 
 ## Progress Tracking
-*This checklist is updated during execution flow*
+
+This checklist is updated during execution flow.
 
 **Phase Status**:
 - [ ] Phase 0: Research complete (/plan command)

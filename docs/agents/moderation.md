@@ -29,3 +29,8 @@
 
 - Track approval rates, turnaround time, and repeated offenders.
 - Alerts on spikes in high-risk changes or reversals.
+
+## Platform
+
+- Primary environment: Windows with PowerShell. Provide commands in PowerShell format by default.
+- Respect `.gitignore` at all times; never commit secrets or credentials.

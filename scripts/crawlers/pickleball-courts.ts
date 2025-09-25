@@ -1,7 +1,7 @@
 import { chromium, Browser, Page } from 'playwright';
-import fetch from 'node-fetch';
 import { PrismaClient } from '@prisma/client';
 import RobotsParser from 'robots-parser';
+import { pathToFileURL } from 'url';
 
 const prisma = new PrismaClient();
 
@@ -36,7 +36,7 @@ async function geocodeAddress(address: string): Promise<{ lat: number; lng: numb
     headers: { 'User-Agent': USER_AGENT },
   });
   if (!res.ok) return null;
-  const data = await res.json();
+  const data = await res.json() as Array<{ lat: string; lon: string }>;
   if (data.length === 0) return null;
   return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
 }
@@ -93,10 +93,12 @@ async function crawlWithRobots(page: Page, url: string, robots: any) {
 }
 
 // Enhanced extraction for visitmyrtlebeach.com
-async function crawlVisitMyrtleBeach(page: Page, robots: any) {
+type Venue = ParsedVenue & { indoor?: boolean; outdoor?: boolean; lights?: boolean; fees?: number[]; lat?: number; lng?: number };
+
+async function crawlVisitMyrtleBeach(page: Page, robots: any): Promise<Venue[]> {
   const url = 'https://www.visitmyrtlebeach.com/article/top-pickleball-courts-in-myrtle-beach';
   await crawlWithRobots(page, url, robots);
-  const venues = await page.$$eval('article .content h3', (els: Element[]) =>
+  const venues: Venue[] = await page.$$eval('article .content h3', (els: Element[]) =>
     els.map((el: Element) => {
       const name = el.textContent?.trim() ?? '';
       const addressEl = el.nextElementSibling?.querySelector('p');
@@ -112,17 +114,17 @@ async function crawlVisitMyrtleBeach(page: Page, robots: any) {
       const fees = feesMatch ? feesMatch.map(f => parseFloat(f.replace('$', ''))) : [];
       const reservationUrlEl = (el.nextElementSibling as Element | null)?.querySelector('a[href*="reserve"]');
       const reservationUrl = reservationUrlEl?.getAttribute('href') ?? undefined;
-      return { name, address, phone, hours, indoor, outdoor, lights, fees, reservationUrl };
+      return { name, address, phone, hours, indoor, outdoor, lights, fees, reservationUrl } as Venue;
     })
   );
   return venues;
 }
 
 // Extract data from nmb.us
-async function crawlNMB(page: Page, robots: any) {
+async function crawlNMB(page: Page, robots: any): Promise<Venue[]> {
   const url = 'https://www.nmb.us/500/Pickleball';
   await crawlWithRobots(page, url, robots);
-  const venues = await page.$$eval('.content p', (els: Element[]) =>
+  const venues: Venue[] = await page.$$eval('.content p', (els: Element[]) =>
     els.map((el: Element) => {
       const text = el.textContent ?? '';
       const nameMatch = text.match(/^\s*([\w\s]+)\s*\n/);
@@ -131,23 +133,23 @@ async function crawlNMB(page: Page, robots: any) {
       const address = addressMatch ? addressMatch[0] : '';
       const phoneMatch = text.match(/\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/);
       const phone = phoneMatch ? phoneMatch[0] : undefined;
-      return { name, address, phone };
+      return { name, address, phone } as Venue;
     })
   );
   return venues;
 }
 
 // Extract data from litchfieldpickle.com
-async function crawlLitchfieldPickle(page: Page, robots: any) {
+async function crawlLitchfieldPickle(page: Page, robots: any): Promise<Venue[]> {
   const url = 'https://www.litchfieldpickle.com/';
   await crawlWithRobots(page, url, robots);
-  const venues = await page.$$eval('.venue', (els: Element[]) =>
+  const venues: Venue[] = await page.$$eval('.venue', (els: Element[]) =>
     els.map((el: Element) => {
       const name = el.querySelector('h2')?.textContent?.trim() ?? '';
       const address = el.querySelector('.address')?.textContent?.trim() ?? '';
       const phone = el.querySelector('.phone')?.textContent?.trim() ?? undefined;
       const email = el.querySelector('.email a')?.getAttribute('href')?.replace('mailto:', '') ?? undefined;
-      return { name, address, phone, email };
+      return { name, address, phone, email } as Venue;
     })
   );
   return venues;
@@ -168,11 +170,12 @@ export async function runCrawler() {
     const litchfieldVenues = await retry(() => crawlLitchfieldPickle(page, litchfieldRobots));
 
     // Combine and geocode
-    const allVenues = [...visitMyrtleBeachVenues, ...nmbVenues, ...litchfieldVenues];
+    const allVenues: Venue[] = [...visitMyrtleBeachVenues, ...nmbVenues, ...litchfieldVenues];
 
     for (const venue of allVenues) {
       if (venue.address) {
-        const geo = await retry(() => geocodeAddress(venue.address));
+        const addr: string = venue.address;
+        const geo = await retry(() => geocodeAddress(addr));
         if (geo) {
           venue.lat = geo.lat;
           venue.lng = geo.lng;
@@ -185,8 +188,8 @@ export async function runCrawler() {
   }
 }
 
-// Run crawler if this script is executed directly
-if (require.main === module) {
+// Run crawler if this script is executed directly (ESM-safe)
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   runCrawler()
     .then(() => {
       console.log('Crawler finished successfully');

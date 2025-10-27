@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "testwatch": "npm run test:watch",
     "typecheck": "tsc --noEmit",
+    "seed": "tsx -r dotenv/config scripts/seed.ts",
     "typesense:setup": "tsx -r dotenv/config scripts/typesense-setup.ts",
     "index:full": "tsx -r dotenv/config scripts/reindex.ts",
     "index:delta": "tsx -r dotenv/config scripts/changed-since.ts"

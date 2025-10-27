@@ -1,100 +1,373 @@
-# Step 3: Generate executable tasks (5 minutes)
-/tasks
+# GS Pickleball Core — Actionable Tasks
 
-# This automatically creates:
-# - specs/001-gs-pickleball-core/tasks.md (this file)
+> **Governance**: Tasks derived from `plan.md` and aligned with constitution v1.3.0.
+>
+> **Status**: Updated 2025-10-27 with current progress and next steps.
 
-> Inputs: reads `plan.md` (required). Converts contracts, entities, and scenarios into tasks. Marks [P] for parallelizable items.
+## Current Progress Summary
 
-## Parallel groups
-- **Group A [P]:** Search cluster (Typesense), Seed data, API scaffolding
-- **Group B [P]:** Map UI, Venue/Program pages, Error/empty states
-- **Group C [P]:** Observability, A11y/SEO, Performance budgets
+**Phase 1 (Core Search & Discovery)**: 70% Complete
+- ✅ Database schema & migrations
+- ✅ Search infrastructure & API endpoints
+- ✅ Testing framework & CI/CD
+- 🚧 Data seeding needed
+- 🚧 Map UI incomplete
+- 🚧 Detail pages missing
 
-## Task list (ordered with references)
+**Next Immediate Priority**: Data Seeding → End-to-End Testing → Map Integration
 
-1. Bootstrap repo and env (Spec § Summary; Plan § Executable sequence 0)  
-   - Create Next.js app, install deps, copy `.env.example`.  
-   - Output: initial commit, CI hooks active.
+---
 
-2. Enable DB extensions (Plan § Executable sequence 1–2)  
-   - Run `sql/0000_enable_extensions.sql` in Supabase.  
-   - Verify `postgis` and `uuid-ossp` enabled.
+## Phase 1: Core Search & Discovery (ACTIVE)
 
-3. Apply Prisma schema and migrate (Spec § Data model; Plan § Executable 3–4)  
-   - Replace `prisma/schema.prisma`; run `prisma migrate dev`.  
-   - Run PostGIS `steps.sql` to add `geog` and GiST.  
-   - Output: DB ready with spatial index.
+### ✅ COMPLETED TASKS
 
-4. Seed minimal data [P] (Plan § Executable 2, 5)  
-   - Insert ≥10 venues, ≥2 coaches with hours.  
-   - Output: smoke data present.
+**1. Bootstrap repo and environment**
+   - Status: DONE
+   - Output: Next.js 14 app, Prisma configured, CI active
+   - Tests: 12 passing across 5 test files
 
-5. Provision Typesense Cloud [P] (Plan § Executable 6)  
-   - Create cluster and keys. Run `/scripts/typesense-setup.ts`.  
-   - Output: `venues`, `programs`, `coaches` collections exist.
+**2. Enable database extensions**
+   - Status: DONE
+   - Output: PostGIS and uuid-ossp enabled in Supabase
+   - Files: `sql/0000_enable_extensions.sql`
 
-6. Full reindex and drift check [P] (Plan § Executable 7)  
-   - Run `/scripts/reindex.ts`; compare counts with DB.  
-   - If drift >1%, log gap in `research.md` (§ Gap log).
+**3. Apply Prisma schema and migrations**
+   - Status: DONE
+   - Output: All entities migrated, PostGIS `geog` column with GiST index
+   - Files: `prisma/schema.prisma`, `prisma/migrations/0001_init/`, `prisma/migrations/0001_postgis/`
 
-7. Schedule delta job (Plan § Executable 8)  
-   - Run `/scripts/changed-since.ts` every 10 minutes.  
-   - Output: cron or scheduled function configured.
+**5. Provision Typesense collections**
+   - Status: DONE
+   - Output: Collections defined for venues, programs, coaches
+   - Files: `scripts/typesense-setup.ts`
+   - Command: `npm run typesense:setup`
 
-8. Implement Venues API (contracts/venues.md; Plan § API contracts)  
-   - Build `/api/search/venues` with zod validation and Typesense client.  
-   - Add unit and contract tests from `contracts/venues.md`.
+**8. Implement Venues Search API**
+   - Status: DONE
+   - Output: `/api/search/venues` with Zod validation, facets, distance sorting
+   - Files: `app/api/search/venues/route.ts`
+   - Tests: Integration tests needed
 
-9. Implement Programs API (contracts/programs.md; Plan § API contracts)  
-   - Build `/api/search/programs` with level constraints.  
-   - Add tests per contract and quickstart case 3.
+**9. Implement Programs Search API**
+   - Status: DONE
+   - Output: `/api/search/programs` with level filtering
+   - Files: `app/api/search/programs/route.ts`
+   - Tests: Integration tests needed
 
-10. Map + list UI [P] (Spec § Scope; Plan § Executable 10)  
-    - Mapbox cluster, cards synced to bounds; facets.  
-    - Output: mobile-first results view.
+### 🔥 HIGH PRIORITY (DO NEXT)
 
-11. Venue page [P] (Spec § Scope; Plan § Executable 11)  
-    - Hours, amenities, fees, booking/contact (validate 200 OK).  
-    - Hide “open-now” if hours missing.
+**4. Create seed data script** [BLOCKED: Development]
+   - Priority: CRITICAL
+   - Estimate: 2-3 hours
+   - Dependencies: None (DB ready)
+   - Acceptance Criteria:
+     - ≥10 venues with varied locations (Pawleys, Murrells, Myrtle, NMB)
+     - Venues have realistic hours (include overnight cases)
+     - ≥8 programs across skill levels (2.0-5.0)
+     - ≥2 coaches with credentials
+     - All data validates against Prisma schema
+   - Files to Create: `scripts/seed.ts`
+   - Command: `npm run seed` (add to package.json)
+   - Test Plan:
+     - Run seed script
+     - Verify data in Supabase dashboard
+     - Query venues/programs/coaches via Prisma
+   - References: `docs/specify.md` § Data model
 
-12. Program and Coach pages [P] (Spec § Scope; Plan § Executable 11)  
-    - Level bands, price, signup URL; coach creds and inquiry CTA.
+**6. Full reindex and validation** [BLOCKED BY: Task 4]
+   - Priority: HIGH
+   - Estimate: 1 hour
+   - Dependencies: Task 4 (seed data)
+   - Acceptance Criteria:
+     - `npm run index:full` completes without errors
+     - All seeded venues appear in Typesense with correct `_geo` and `open_now`
+     - Programs indexed with correct `level_min`, `level_max`, `start_ts`
+     - Drift check shows <1% divergence
+     - Logs written to `logs/` directory
+   - Command: `npm run index:full`
+   - Test Plan:
+     - Check Typesense collection counts match DB counts
+     - Search for venues by name and verify results
+     - Filter by facets (indoor, lights, open_now)
+     - Verify distance sorting works
+   - References: `scripts/reindex.ts`
 
-13. Error and empty states [P] (Spec § Error states; Plan § Executable 12)  
-    - Implement Typesense/Supabase failures, no-results UX, offline banner.
+**6b. End-to-end search validation** [BLOCKED BY: Task 6]
+   - Priority: HIGH
+   - Estimate: 1 hour
+   - Dependencies: Task 6 (full reindex)
+   - Acceptance Criteria:
+     - `/api/search/venues?lat=33.462&lng=-79.121&indoor=true` returns results
+     - `/api/search/programs?kind=lesson&level=3.0` filters correctly
+     - Typo tolerance works (`q=pikleball`)
+     - P95 latency ≤150ms (measure with 20 sequential requests)
+   - Test Plan:
+     - Use curl or Postman to test API endpoints
+     - Verify response structure matches contracts
+     - Check performance with `time` command
+   - References: `specs/001-gs-pickleball-core/quickstart.md`
 
-14. Observability & reliability [P] (Plan § Audit plan; Spec § Metrics)  
-    - Add Sentry, logs, uptime; index drift alerts; error budget tracking.
+### 📋 MEDIUM PRIORITY
 
-15. Accessibility audit [P] (Spec § Acceptance; Plan § Audit plan)  
-    - Keyboard paths; Axe CI; WCAG AA automated checks pass.
+**10. Map + list UI with Mapbox** [BLOCKED BY: Task 6b]
+   - Priority: MEDIUM
+   - Estimate: 4-6 hours
+   - Dependencies: Task 6b (working search)
+   - Acceptance Criteria:
+     - Mapbox GL integrated in `app/page.tsx`
+     - Venues displayed as clustered markers
+     - Click marker → show venue card
+     - Results list syncs with map bounds
+     - Facet filters (indoor, lights, open_now) update map and list
+     - Mobile responsive
+   - Files to Modify: `app/page.tsx`
+   - Libraries: `mapbox-gl`, `react-map-gl`
+   - Test Plan:
+     - Zoom/pan updates results
+     - Toggle filters updates markers
+     - Click marker shows correct venue
+   - References: `docs/specify.md` § Search & filters
 
-16. Performance budgets [P] (Spec § Metrics and budgets)  
-    - Lighthouse CI; Search API P95 ≤150 ms; LCP ≤2.0 s; INP ≤200 ms.
+**11. Venue detail pages** [Can parallelize with Task 10]
+   - Priority: MEDIUM
+   - Estimate: 3-4 hours
+   - Dependencies: Task 4 (seed data)
+   - Acceptance Criteria:
+     - Route: `/venues/[id]`
+     - Display: name, address, hours, amenities, fees, booking link, parking notes
+     - "Open now" badge shown if `isOpenNow()` returns true
+     - Hide badge if `hoursJson` is null
+     - Booking link validated (200 OK or mailto/tel)
+     - Mobile responsive
+   - Files to Create: `app/venues/[id]/page.tsx`
+   - Test Plan:
+     - Navigate to venue from search results
+     - Verify all fields display correctly
+     - Test "open now" logic at different times
+     - Click booking link works
+   - References: `docs/specify.md` § Venue pages
 
-17. SEO checks [P] (Plan § SEO; Spec § Goals)  
-    - Schema.org validation, canonicals, sitemaps, unique locality copy.
+**12. Program and Coach detail pages** [Can parallelize with Task 10]
+   - Priority: MEDIUM
+   - Estimate: 3-4 hours
+   - Dependencies: Task 4 (seed data)
+   - Acceptance Criteria:
+     - Program route: `/programs/[id]`
+       - Display: kind, level band, dates, price, signup URL, venue link
+     - Coach route: `/coaches/[id]`
+       - Display: name, credentials, rate, cities served, inquiry CTA
+     - Mobile responsive
+   - Files to Create:
+     - `app/programs/[id]/page.tsx`
+     - `app/coaches/[id]/page.tsx`
+   - Test Plan:
+     - Navigate from search results
+     - Verify level filtering logic
+     - Test inquiry form (future: can be placeholder CTA for now)
+   - References: `docs/specify.md` § Programs and coaches
 
-18. Release & monitor (Plan § Executable 15; Audit plan)  
-    - Soft launch with LBTS photos; weekly KPI digest; capture gaps in `research.md`.
+**13. Error and empty states** [Can parallelize]
+   - Priority: MEDIUM
+   - Estimate: 2-3 hours
+   - Dependencies: Task 10 (map UI)
+   - Acceptance Criteria:
+     - Search fails → show error with "Retry" button
+     - No results → show empty state with "broaden radius" suggestion + top 4 nearby courts
+     - Geo denied → fallback to manual entry, default to Myrtle Beach
+     - Offline → banner "You are offline—data may be outdated"
+   - Files to Create/Modify:
+     - `app/components/ErrorState.tsx`
+     - `app/components/EmptyState.tsx`
+     - `app/page.tsx` (integrate states)
+   - Test Plan:
+     - Simulate Typesense timeout
+     - Search with no matches
+     - Block geolocation
+     - Go offline (DevTools)
+   - References: `docs/specify.md` § Error states
 
-## Unknowns → research TODOs
-- G‑01..G‑06 from `research.md` → assign owners and due dates before step 10.  
-- Add any new vendor or TOS questions discovered in steps 5–7.
+### ⏰ LOW PRIORITY (Phase 1 completion)
 
-## Output format for Task agent
-Each task includes: `id, title, refs, cmd (if any), deps, parallelizable`.
+**7. Schedule delta indexer job**
+   - Priority: LOW (for Phase 1; needed for production)
+   - Estimate: 2 hours
+   - Dependencies: Task 6 (full reindex working)
+   - Acceptance Criteria:
+     - Cron job or scheduled function runs `npm run index:delta` every 10 minutes
+     - Uses `LOOKBACK_MINUTES=10` env var
+     - Logs to centralized location
+     - Alerts if errors >5%
+   - Options:
+     - Vercel Cron Jobs
+     - Railway/Fly.io cron
+     - GitHub Actions scheduled workflow
+   - Test Plan:
+     - Update a venue in DB
+     - Wait 10 minutes
+     - Verify Typesense index updated
+   - References: `scripts/changed-since.ts`
 
-```json
-[
-  { "id": 1, "title": "Bootstrap repo and env", "refs": ["Spec § Summary", "Plan § 0"], "cmd": "npx create-next-app ...", "deps": [], "parallelizable": false },
-  { "id": 4, "title": "Seed minimal data", "refs": ["Plan § 2,5"], "cmd": "node scripts/seed.js", "deps": [3], "parallelizable": true },
-  { "id": 5, "title": "Provision Typesense", "refs": ["Plan § 6"], "cmd": "tsx scripts/typesense-setup.ts", "deps": [3], "parallelizable": true }
-]
+**16. Performance validation**
+   - Priority: LOW (but measure early)
+   - Estimate: 2 hours
+   - Dependencies: Task 10 (map UI)
+   - Acceptance Criteria:
+     - Lighthouse CI configured
+     - Search API P95 ≤150ms (test with 100 requests)
+     - LCP ≤2.0s on 4G throttle
+     - CLS ≤0.1
+     - INP ≤200ms
+   - Tools: Lighthouse CLI, k6 or Apache Bench
+   - Test Plan:
+     - Run Lighthouse on `/` and venue pages
+     - Load test search API
+     - Document results in `docs/performance.md`
+   - References: `docs/specify.md` § Performance budgets
+
+---
+
+## Phase 2: Data Operations (NOT STARTED)
+
+**Priority**: Start after Phase 1 reaches 90%
+
+### Tasks (Brief overview)
+
+**20. Implement Playwright crawler for Visit-MB**
+   - Estimate: 6-8 hours
+   - Files: `scripts/crawlers/visit-mb/crawl.ts`
+   - Dependencies: Playwright installed
+
+**21. Enhance normalizer with geocoding**
+   - Estimate: 4-6 hours
+   - Files: `scripts/normalizer/venue.ts` (enhance existing)
+   - Dependencies: Nominatim or Mapbox Geocoding API
+
+**22. Build verifier queue system**
+   - Estimate: 6-8 hours
+   - Files: `scripts/verifier/queue.ts`, email templates
+   - Dependencies: Email service (SendGrid or similar)
+
+**23. Nightly reconciliation job**
+   - Estimate: 3-4 hours
+   - Dependencies: Delta indexer (Task 7)
+
+---
+
+## Phase 3: User Features (NOT STARTED)
+
+**Priority**: Start Week 7
+
+### Tasks (Brief overview)
+
+**30. Supabase Auth integration**
+**31. Favorites system**
+**32. Email alerts**
+**33. Public submission form**
+
+---
+
+## Phase 4: Monetization (NOT STARTED)
+
+**Priority**: Start Week 10
+
+### Tasks (Brief overview)
+
+**40. Stripe subscriptions**
+**41. Featured listings**
+**42. Partner widgets**
+**43. LBTS partnership pages**
+
+---
+
+## Phase 5: SEO & Growth (ONGOING)
+
+**Priority**: Incremental; start after Phase 1
+
+### Tasks (Brief overview)
+
+**50. Locality-intent pages** (Pawleys, Murrells, Myrtle, NMB)
+**51. Sitemap generation**
+**52. Schema.org markup**
+**53. Analytics setup**
+
+---
+
+## Testing Checklist
+
+### Current Test Coverage: 12 tests passing
+- ✅ `lib/openNow.ts` — 9 tests (4 in tests/unit/, 5 in tests/)
+- ✅ Crawler parser — 1 test
+- ✅ Normalizer — 1 test
+- ✅ Verifier email template — 1 test
+
+### Needed Tests (Add as you build)
+- [ ] API route integration tests (venues, programs)
+- [ ] Venue detail page rendering
+- [ ] Program detail page with level filtering
+- [ ] Coach detail page
+- [ ] Error/empty state components
+- [ ] Map clustering logic
+- [ ] Search result synchronization
+
+### Coverage Targets (vitest.config.ts)
+- Lines: ≥70%
+- Branches: ≥60%
+- Functions: ≥70%
+- Statements: ≥70%
+
+---
+
+## Development Commands Reference
+
+```bash
+# Database
+npm run typecheck          # Check TypeScript
+npx prisma generate        # Generate Prisma client
+npx prisma migrate dev     # Apply migrations
+
+# Search
+npm run typesense:setup    # Create collections (one-time)
+npm run index:full         # Full reindex
+npm run index:delta        # Delta reindex (LOOKBACK_MINUTES)
+
+# Testing
+npm test                   # Run all tests
+npm run test:watch         # Watch mode
+npm run lint               # ESLint
+npm run format             # Prettier check
+
+# Development
+npm run dev                # Start dev server (localhost:3000)
+npm run build              # Production build
 ```
 
-## Meta checklists
-- **Ordering & references**: All core tasks map back to Spec/Plan/Contracts.  
-- **Unknowns captured**: `research.md` gaps updated with owners and due dates.  
-- **NFRs testable**: Budgets encoded in CI; a11y tests in CI; error/empty states covered.
+---
+
+## Unblocking Checklist
+
+Before starting development, ensure:
+- [ ] `.env` file created from `.env.example`
+- [ ] All required env vars set (Supabase, Typesense, Mapbox)
+- [ ] Supabase project created and extensions enabled
+- [ ] Typesense cluster provisioned (Cloud or local Docker)
+- [ ] `npm install` completed
+- [ ] `npx prisma generate` completed
+- [ ] Migrations applied to Supabase
+
+---
+
+## References
+
+- **Plan**: `specs/001-gs-pickleball-core/plan.md`
+- **Spec**: `docs/specify.md`
+- **Constitution**: `.specify/memory/constitution.md` (v1.3.0)
+- **Architecture**: `docs/ARCHITECTURE.md`
+- **Data Model**: `specs/001-gs-pickleball-core/data-model.md`
+- **API Contracts**: `specs/001-gs-pickleball-core/contracts/`
+
+---
+
+**Version**: 1.0.0
+**Last Updated**: 2025-10-27
+**Next Review**: After Task 6b completion
